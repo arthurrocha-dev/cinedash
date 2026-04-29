@@ -8,65 +8,52 @@ import {
 import { LoginForm } from '@/features/auth/ui/LoginForm'
 import { useAuthStore } from '@/features/auth/model/authStore'
 import { RootLayout } from '../layouts/RootLayout'
+import { DiscoverPage } from '@/pages/discover/DiscoverPage'
+import { WatchlistPage } from '@/pages/watchlist/WatchlistPage'
+import { MovieDetailPage } from '@/pages/movie/MovieDetailPage'
 
-// Root route
-const rootRoute = createRootRoute({
-  component: RootLayout,
-})
-
-// Auth guard wrapper
 function getIsAuthenticated() {
   return useAuthStore.getState().isAuthenticated
 }
 
-// Login route
+const rootRoute = createRootRoute({
+  component: RootLayout,
+})
+
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   beforeLoad: () => {
     if (getIsAuthenticated()) throw redirect({ to: '/' })
   },
-  component: () => <LoginForm />,
+  component: LoginForm,
 })
 
-// Protected layout route
 const protectedRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: 'protected',
   beforeLoad: () => {
     if (!getIsAuthenticated()) throw redirect({ to: '/login' })
   },
-  component: () => <Outlet />,
+  component: Outlet,
 })
 
-// Discover (home)
 const discoverRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/',
-  component: () => {
-    const { DiscoverPage } = require('@/pages/discover/DiscoverPage')
-    return <DiscoverPage />
-  },
+  component: DiscoverPage,
 })
 
-// Watchlist
 const watchlistRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/watchlist',
-  component: () => {
-    const { WatchlistPage } = require('@/pages/watchlist/WatchlistPage')
-    return <WatchlistPage />
-  },
+  component: WatchlistPage,
 })
 
-// Movie detail
 const movieRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/movie/$movieId',
-  component: () => {
-    const { MovieDetailPage } = require('@/pages/movie/MovieDetailPage')
-    return <MovieDetailPage />
-  },
+  component: MovieDetailPage,
 })
 
 const routeTree = rootRoute.addChildren([
