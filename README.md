@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# CineDash
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dashboard analítico de curadoria de filmes, construído com React 18 + TypeScript sobre a API pública do TMDB.
 
-Currently, two official plugins are available:
+Projeto desenvolvido como solução ao [React Frontend Challenge](https://github.com/buzzmates/react-frontend-challenge) da Buzzmates.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Funcionalidades
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Autenticação simulada** — login com validação Zod, JWT mock, sessão persistida em localStorage
+- **Descoberta de filmes** — hero com trending semanal, busca com debounce, filtros por gênero / ano / nota mínima / ordenação, paginação, filtros sincronizados na URL
+- **Watchlist** — adicionar/remover filmes, tabela com sorting por título, nota e data, persistida em localStorage
+- **Detalhe do filme** — backdrop hero, elenco principal, trailer via YouTube embed, filmes similares, link para TMDB
+- **Tema dark / light / system** — preferência persistida
 
-## Expanding the ESLint configuration
+## Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Categoria | Tecnologia |
+|---|---|
+| Core | React 18, TypeScript (strict), Vite |
+| Estado servidor | TanStack Query v5 |
+| Estado cliente | Zustand v5 + persist |
+| Roteamento | TanStack Router v1 |
+| UI | shadcn/ui (Radix UI) + TailwindCSS v4 |
+| Formulários | React Hook Form + Zod |
+| Tabelas | TanStack Table v8 |
+| Testes | Vitest + React Testing Library |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Arquitetura
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+O projeto adota **Feature-Sliced Design (FSD)** com cinco camadas ordenadas por nível de abstração:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+app → pages → widgets → features → entities → shared
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Cada camada importa apenas das camadas abaixo dela, eliminando coupling circular. Veja [ARCHITECTURE.md](./ARCHITECTURE.md) para a justificativa completa das decisões técnicas.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Setup
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Pré-requisitos:** Node.js 18+, chave de API do TMDB (gratuita em [themoviedb.org](https://www.themoviedb.org/settings/api))
+
+```bash
+# Instalar dependências
+npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
+# Edite .env e adicione sua VITE_TMDB_API_KEY
+
+# Iniciar em desenvolvimento
+npm run dev
 ```
+
+A aplicação sobe em `http://localhost:5173`.
+
+**Login:** use qualquer e-mail válido e senha com 6+ caracteres.
+
+## Scripts
+
+```bash
+npm run dev        # Servidor de desenvolvimento
+npm run build      # Build de produção
+npm run typecheck  # Verificação TypeScript
+npm test           # Rodar testes (Vitest)
+```
+
+## Testes
+
+```
+40 testes | 8 suítes | 0 erros TypeScript
+```
+
+Cobertura focada em valor real:
+- Stores (auth, watchlist, filtros)
+- Validação de schema (Zod)
+- Hook `useDebounce`
+- Integração: `LoginForm`, `MovieGrid`, `WatchlistTable`
