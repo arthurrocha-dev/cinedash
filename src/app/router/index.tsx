@@ -5,6 +5,7 @@ import {
   redirect,
   Outlet,
 } from '@tanstack/react-router'
+import { z } from 'zod'
 import { LoginForm } from '@/features/auth/ui/LoginForm'
 import { useAuthStore } from '@/features/auth/model/authStore'
 import { RootLayout } from '../layouts/RootLayout'
@@ -38,9 +39,22 @@ const protectedRoute = createRoute({
   component: Outlet,
 })
 
+// Search params schema para a rota discover
+const discoverSearchSchema = z.object({
+  q: z.string().optional(),
+  genre: z.number().optional(),
+  year: z.number().optional(),
+  rating: z.number().optional(),
+  sort: z.enum(['popularity.desc', 'vote_average.desc', 'release_date.desc']).optional(),
+  page: z.number().optional(),
+})
+
+export type DiscoverSearch = z.infer<typeof discoverSearchSchema>
+
 const discoverRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/',
+  validateSearch: discoverSearchSchema,
   component: DiscoverPage,
 })
 

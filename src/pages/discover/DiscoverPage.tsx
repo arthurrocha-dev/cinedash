@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useFilterStore } from '@/features/discover/model/filterStore'
+import { useUrlFilters } from '@/features/discover/model/useUrlFilters'
 import { SearchBar } from '@/features/discover/ui/SearchBar'
 import { FilterPanel } from '@/features/discover/ui/FilterPanel'
 import { TrendingHero } from '@/widgets/TrendingHero/TrendingHero'
@@ -8,18 +9,21 @@ import { MovieGrid } from '@/widgets/MovieGrid/MovieGrid'
 import { ErrorBoundary } from '@/shared/ui/error-boundary'
 
 export function DiscoverPage() {
-  const [page, setPage] = useState(1)
   const { query, genreId, year, minRating } = useFilterStore()
+  const navigate = useNavigate({ from: '/' })
+  const currentPage = useUrlFilters()
   const hasActiveFilters = !!query || genreId !== null || year !== null || minRating !== null
 
   function handlePageChange(newPage: number) {
-    setPage(newPage)
+    void navigate({
+      search: (prev) => ({ ...prev, page: newPage > 1 ? newPage : undefined }),
+      replace: false,
+    })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <div>
-      {/* Hero com trending — oculto quando filtros ativos */}
       {!hasActiveFilters && (
         <ErrorBoundary>
           <TrendingHero />
@@ -27,19 +31,15 @@ export function DiscoverPage() {
       )}
 
       <div className="container mx-auto px-4 py-8">
-        {/* Busca e filtros */}
         <div className="mb-6 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">
-              {hasActiveFilters ? 'Resultados' : 'Descobrir Filmes'}
-            </h1>
-          </div>
+          <h1 className="text-2xl font-bold">
+            {hasActiveFilters ? 'Resultados' : 'Descobrir Filmes'}
+          </h1>
           <SearchBar />
           <FilterPanel />
         </div>
 
         <ErrorBoundary>
-          {/* Trending strip — apenas na view inicial sem filtros */}
           {!hasActiveFilters && (
             <div className="mb-10">
               <TrendingStrip />
@@ -47,7 +47,7 @@ export function DiscoverPage() {
               <h2 className="mb-4 text-lg font-semibold">Populares</h2>
             </div>
           )}
-          <MovieGrid page={page} onPageChange={handlePageChange} />
+          <MovieGrid page={currentPage} onPageChange={handlePageChange} />
         </ErrorBoundary>
       </div>
     </div>
