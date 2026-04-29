@@ -10,12 +10,13 @@ import { ErrorBoundary } from '@/shared/ui/error-boundary'
 
 export function DiscoverPage() {
   const { query, genreId, year, minRating } = useFilterStore()
-  const navigate = useNavigate({ from: '/' })
+  const navigate = useNavigate()
   const currentPage = useUrlFilters()
   const hasActiveFilters = !!query || genreId !== null || year !== null || minRating !== null
 
   function handlePageChange(newPage: number) {
     void navigate({
+      to: '/',
       search: (prev) => ({ ...prev, page: newPage > 1 ? newPage : undefined }),
       replace: false,
     })
