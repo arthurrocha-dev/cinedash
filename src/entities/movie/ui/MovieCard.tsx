@@ -39,7 +39,8 @@ export function MovieCard({ movie }: MovieCardProps) {
       to="/movie/$movieId"
       params={{ movieId: String(movie.id) }}
       onMouseEnter={prefetchDetail}
-      className="group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      aria-label={`${movie.title} (${formatYear(movie.releaseDate)}) — nota ${formatRating(movie.voteAverage)}`}
+      className="group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <div className="relative aspect-[2/3] overflow-hidden bg-muted">
         {poster ? (
