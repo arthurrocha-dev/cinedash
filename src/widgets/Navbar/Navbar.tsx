@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { Film, Bookmark, LogOut, Sun, Moon, Monitor } from 'lucide-react'
 import { useAuthStore } from '@/features/auth/model/authStore'
 import { useTheme } from '@/app/providers/ThemeProvider'
@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge'
 export function Navbar() {
   const logout = useAuthStore((s) => s.logout)
   const user = useAuthStore((s) => s.user)
+  const navigate = useNavigate()
   const watchlistCount = useWatchlistStore((s) => s.entries.length)
   const { theme, setTheme } = useTheme()
   const location = useLocation()
@@ -70,7 +71,7 @@ export function Navbar() {
           <Button variant="ghost" size="icon" onClick={cycleTheme} aria-label={`Tema atual: ${theme}. Clique para alternar`}>
             <ThemeIcon className="h-4 w-4" aria-hidden="true" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={logout} aria-label="Sair da conta">
+          <Button variant="ghost" size="icon" onClick={() => { logout(); void navigate({ to: '/login' }) }} aria-label="Sair da conta">
             <LogOut className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>

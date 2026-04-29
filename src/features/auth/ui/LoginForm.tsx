@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
 import { Film } from 'lucide-react'
 import { useAuthStore } from '../model/authStore'
 import { loginSchema, type LoginFormData } from '../model/authSchema'
@@ -10,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 
 export function LoginForm() {
   const login = useAuthStore((s) => s.login)
+  const navigate = useNavigate()
 
   const {
     register,
@@ -21,6 +23,7 @@ export function LoginForm() {
 
   const onSubmit = (data: LoginFormData) => {
     login(data.email, data.password)
+    void navigate({ to: '/' })
   }
 
   return (
