@@ -48,7 +48,7 @@ function MovieDetailSkeleton() {
 }
 
 function MovieDetailContent() {
-  const { movieId } = useParams({ from: '/movie/$movieId' })
+  const { movieId } = useParams({ from: '/protected/movie/$movieId' })
   const id = Number(movieId)
   const { data, isPending, isError, error } = useMovieDetail(id)
   const { add, remove, has } = useWatchlistStore()
